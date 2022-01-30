@@ -3,14 +3,6 @@ let fs = require('fs');
 
 class Contenedor {
 
-	writeToFile = async () => {
-		try {
-			await fs.promises.writeFile(this.fileName, JSON.stringify(this.contenedor));
-		} catch (e) {
-			console.error("error escribiendo");
-		}
-	}
-
 	constructor(fileName) {
 		this.fileName = fileName;
 		this.currentId = 1;
@@ -25,6 +17,15 @@ class Contenedor {
 		}
 		initialize(fileName);
 	}
+
+	writeToFile = async () => {
+		try {
+			await fs.promises.writeFile(this.fileName, JSON.stringify(this.contenedor));
+		} catch (e) {
+			console.error("error escribiendo");
+		}
+	}
+
 	save = async (objeto) => {
 		const obj = this.contenedor.find(o => o.id === objeto.id);
 		if (obj) {
@@ -38,27 +39,22 @@ class Contenedor {
 	}
 
 	getById(id) {
-		console.log(`Buscando elemento id:${id}`);
 		const result = this.contenedor.find(o => o.id === id);
 		return (result) ? result : null;
 	}
 
 	getAll() {
-		console.log(`Dame todo!`);
 		return this.contenedor;
 	}
 
 	async deleteById(id) {
 		this.contenedor = this.contenedor.filter(x => x.id !== id);
 		await this.writeToFile();
-		console.log(`Elemento id:${id} eliminado`);
 	}
 
 	async deleteAll() {
 		this.contenedor = [];
 		await this.writeToFile();
-		console.log(`Colección eliminada`);
-
 	}
 }
 
