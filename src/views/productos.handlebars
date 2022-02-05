@@ -1,7 +1,7 @@
 <div class="container-fluid">
     <div class="card">
         <div class="card-header text-white bg-primary">
-            Productos
+            Productos 
         </div>
         <div class="card-body">
             {{#if productos}}
@@ -18,7 +18,7 @@
                         <td>{{this.price}}</td>
                         <td>
                             {{#if this.thumbnail}}
-                            <img src="{{this.thumbnail}}" style="width: 64px;" />
+                              <img src="{{this.thumbnail}}" style="width: 64px;" />
                             {{/if}}
                         </td>
                     </tr>
@@ -30,6 +30,7 @@
                 No se encontraron productos
             </div>
             {{/if}}
+            <a href="/" >Cargar Producto</a>
         </div>
     </div>
 </div>
