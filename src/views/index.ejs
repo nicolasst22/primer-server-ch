@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="es">
+  <%- include ("head") %>
+  <body>
+    <div class="container-fluid">
+      <div class="card">
+        <div class="card-header text-white bg-primary">Ingrese Producto</div>
+        <div class="card-body">
+          <div class="container">
+            <form class="form-horizontal" action="/" method="POST">
+              <div class="form-group row">
+                <label class="col-sm-2 col-form-label" for="title"
+                  >Nombre</label
+                >
+                <input class="form-control" type="text" required name="title" />
+              </div>
+              <div class="form-group row">
+                <label class="col-sm-2 col-form-label" for="price"
+                  >Precio</label
+                >
+                <input
+                  class="form-control"
+                  type="number"
+                  required
+                  name="price"
+                />
+              </div>
+              <div class="form-group row">
+                <label class="col-sm-2 col-form-label" for="thumbnail"
+                  >Imágen</label
+                >
+                <input class="form-control" type="text" name="thumbnail" />
+              </div>
+              <div class="enviar">
+                <input class="btn btn-primary" type="submit" value="Enviar" />
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
