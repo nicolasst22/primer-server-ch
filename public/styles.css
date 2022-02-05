@@ -6,7 +6,6 @@
 
 .enviar {
     display: block;
-    width: 300px;
     margin: 10px;
     text-align: right;
 }
@@ -14,8 +13,4 @@
 label {
     width: 50%;
     display: inline-block;
-}
-
-input[type=text]{
-    width: 50%;
 }
