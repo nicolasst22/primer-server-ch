@@ -4,6 +4,11 @@ const routesAPI = require("./src/routes")
 const PORT = 8080;
 const app = express();
 const productoController = require("./src/controllers/ProductoController")
+const { Server: HttpServer } = require("http");
+const http = new HttpServer(app);
+const io = require("socket.io")(http)
+
+// const io = new SocketIO(http)
 
 
 app.use(express.json()); //Used to parse JSON bodies
@@ -51,6 +56,10 @@ const productos = [
     }
 ]
 
+const pushData = () => {
+    io.emit("data", productos);
+}
+
 
 app.get("/", (req, res) => {
     res.render("index")
@@ -63,11 +72,39 @@ app.get("/productos", (req, res) => {
 app.post("/", (req, res) => {
     const id = (productos && productos.length > 0) ? productos.length + 1 : "1"
     productos.push({ ...req.body, id });
-    res.redirect('/productos');
+    pushData()
+    //res.redirect('/productos');
+    res.redirect('/');
 })
 
-const server = app.listen(PORT, () => {
-    console.log(`Iniciando el servido en ${server.address().port}`)
+
+// const server = app.listen(PORT, () => {
+//     console.log(`Iniciando el servido en ${server.address().port}`)
+// })
+// server.on("error", error => `Error en el servidor ${error}`)
+
+io.on("connection", (socket) => {
+    console.log("connection");
+    socket.on("fetch", data => {
+        pushData();
+    })
+
+    socket.on("new message", data => {
+        data.fecha = new Date();
+        io.emit("msg", data)
+    })
+
+    socket.on("message", data => {
+        pushData();
+    })
+
 })
 
-server.on("error", error => `Error en el servidor ${error}`)
+const PORTWS = 8080;
+http.listen(PORTWS, err => {
+    console.log(`WS iniciado ${PORTWS} `)
+})
+
+
+
+
