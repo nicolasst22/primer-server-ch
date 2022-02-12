@@ -19,27 +19,42 @@
                         <input class="form-control" type="text" name="thumbnail" />
                     </div>
                     <div class="enviar">
-                        <input class="btn btn-primary" type="submit" value="Enviar" />
+                        <input class="btn btn-success" type="submit" value="Enviar" />
                     </div>
                 </form>
                 <a href="/productos">Ver productos</a>
             </div>
         </div>
+        <div id="dynamicTable"></div>
     </div>
-    <div id="dynamicTable"></div>
+
 
     <div id="chats">
         <div class="container-fluid">
-            <form class="form-horizontal" method="POST" action="#" id="chat">
-                <input placeholder="Ingrese su email" class="form-control" type="email" name="email" />
-                <ul style="list-style-type: none;" id="messages">
-                </ul>
-                <input type="text" placeholder="ingrese el mensage" class="form-control" name="message" />
-                <input class="btn btn-success" type="submit" name="enviar" value="Enviar">
-            </form>
+            <div class="card">
+                <div class="card-header text-white bg-primary">
+                    Centro de Mensages
+                </div>
+                <div class="card-body">
+                    <form class="form-horizontal" method="POST" action="#" id="chat">
+                        <div class="form-group row">
+                            <input placeholder="Ingrese su email" class="form-control col-6" type="email"
+                                name="email" />
+                        </div>
+
+                        <p>Mensajes</p>
+                        <ul style="list-style-type: none;" id="messages">
+                        </ul>
+                        <div class="form-group row">
+                            <input type="text" placeholder="ingrese el mensage" class="form-control col-6" name="message" />
+                            <input class="btn btn-primary" type="submit" name="enviar" value="Enviar">
+                        </div>
+
+                    </form>
+                </div>
+            </div>
         </div>
     </div>
-</div>
 
 
 </div>
