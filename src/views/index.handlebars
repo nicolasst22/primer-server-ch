@@ -5,7 +5,7 @@
         </div>
         <div class="card-body">
             <div class="container">
-                <form class="form-horizontal" action="/" method="POST">
+                <form id="form" class="form-horizontal" action="/" method="POST">
                     <div class="form-group row">
                         <label class="col-sm-2 col-form-label" for="title">Nombre</label>
                         <input class="form-control" type="text" required name="title" />
@@ -22,8 +22,76 @@
                         <input class="btn btn-primary" type="submit" value="Enviar" />
                     </div>
                 </form>
-                 <a href="/productos" >Ver productos</a>
+                <a href="/productos">Ver productos</a>
             </div>
         </div>
     </div>
+    <div id="dynamicTable"></div>
+
+    <div id="chats">
+        <div class="container-fluid">
+            <form class="form-horizontal" method="POST" action="#" id="chat">
+                <input placeholder="Ingrese su email" class="form-control" type="email" name="email" />
+                <ul style="list-style-type: none;" id="messages">
+                </ul>
+                <input type="text" placeholder="ingrese el mensage" class="form-control" name="message" />
+                <input class="btn btn-success" type="submit" name="enviar" value="Enviar">
+            </form>
+        </div>
+    </div>
 </div>
+
+
+</div>
+<script>
+    var socket = new io();
+    $(document).ready(() => {
+
+        socket.on("data", (data) => {
+            $("#dynamicTable tbody").empty()
+            if (data) {
+                data.forEach(p => {
+                    $(`<tr>
+                            <td>${p.title}</td>
+                            <td>${p.price}</td>
+                            <td>
+                               ${(p.thumbnail) ? `<img style="max-width: 50px" src="${p.thumbnail}" alt=${p.title} />` : ""}                        </td>
+                        <tr>`).appendTo("#dynamicTable tbody");
+                })
+            }
+        })
+        socket.on("msg", (msg) => {
+            const fecha = new Date(msg.fecha);
+            $("#messages").append(`
+                    <li>
+                        <span style="margin: 1px;color:blue">${msg.email}</span><span
+                        style="margin: 1px; color:red">[${fecha.toLocaleDateString()} ${fecha.toLocaleTimeString()}]</span>
+                        <span style="margin: 1px; color:green">: ${msg.message}</span>
+                    </li>
+            `)
+        })
+        fetch("/public/table.html").then(respuesta => {
+            return respuesta.text();
+        }).then(respuesta => {
+            $("#dynamicTable").html(respuesta)
+            socket.emit("fetch", new Date())
+        })
+
+    })
+    $("#chat").on("submit", (e) => {
+        e.preventDefault();
+        let msg = {
+            email: e.target[0].value,
+            message: e.target[1].value
+        }
+        if (msg.email == "" || msg.user == "") {
+            alert("Complete los campos!");
+        } else {
+            socket.emit("new message", msg);
+            e.target[1].value = "";
+        }
+
+    })
+
+
+</script>
