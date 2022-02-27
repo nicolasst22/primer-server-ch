@@ -25,7 +25,19 @@
                 <a href="/productos">Ver productos</a>
             </div>
         </div>
-        <div id="dynamicTable"></div>
+        <div id="dynamicTable">
+            <div class="container-fluid">
+                <h2>Lista de Productos</h2>
+                <table class="table table-dark">
+                    <thead>
+                        <th scope="col">Nombre</th>
+                        <th scope="col">Precio</th>
+                        <th scope="col">Foto</th>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
     </div>
 
 
@@ -46,7 +58,8 @@
                         <ul style="list-style-type: none;" id="messages">
                         </ul>
                         <div class="form-group row">
-                            <input type="text" placeholder="ingrese el mensage" class="form-control col-6" name="message" />
+                            <input type="text" placeholder="ingrese el mensage" class="form-control col-6"
+                                name="message" />
                             <input class="btn btn-primary" type="submit" name="enviar" value="Enviar">
                         </div>
 
@@ -85,12 +98,21 @@
                     </li>
             `)
         })
-        fetch("/public/table.html").then(respuesta => {
-            return respuesta.text();
-        }).then(respuesta => {
-            $("#dynamicTable").html(respuesta)
-            socket.emit("fetch", new Date())
+        socket.on("messages", (msgs) => {
+            msgs.forEach(msg => {
+                const fecha = new Date(msg.fecha);
+                $("#messages").append(`
+                    <li>
+                        <span style="margin: 1px;color:blue">${msg.email}</span><span
+                        style="margin: 1px; color:red">[${fecha.toLocaleDateString()} ${fecha.toLocaleTimeString()}]</span>
+                        <span style="margin: 1px; color:green">: ${msg.message}</span>
+                    </li>
+            `)
+            }
+            )
         })
+
+        socket.emit("fetch", new Date())
 
     })
     $("#chat").on("submit", (e) => {
@@ -106,6 +128,32 @@
             e.target[1].value = "";
         }
 
+    })
+
+    $("#form").on("submit", (e) => {
+        e.preventDefault();
+        var data = {};
+        $.each($('#form').serializeArray(), function (i, field) {
+            data[field.name] = field.value;
+        });
+        $.ajax({
+            type: "POST",
+            url: "/",
+            data: JSON.stringify(data),// now data come in this function
+            contentType: "application/json; charset=utf-8",
+            crossDomain: true,
+            dataType: "json",
+            success: function (data, status, jqXHR) {
+                console.log("se guardo", data)
+                alert("Se han guardado los datos");// write success in " "
+            },
+
+            error: function (jqXHR, status) {
+                // error handler
+                // console.log(jqXHR);
+                alert('Ocurrio un error' + status.code);
+            }
+        });
     })
 
 

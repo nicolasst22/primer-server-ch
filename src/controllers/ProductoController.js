@@ -1,12 +1,13 @@
-const contenedor = require("./ContenedorController")
+const contenedor = require("./MysqlController")
 
-exports.listaProductos = (req, res) => {
-    res.json(contenedor.getAll())
+exports.listaProductos = async (req, res) => {
+    const productos = await contenedor.getAll();
+    res.render("productos", { productos })
 }
 
 const NOT_FOUND = { error: 'producto no encontrado' };
-exports.getProducto = (req, res) => {
-    const result = contenedor.getById(parseInt(req.params.id));
+exports.getProducto = async (req, res) => {
+    const result = await contenedor.getById(parseInt(req.params.id));
     if (result) {
         res.json(result);
     } else {
@@ -14,29 +15,30 @@ exports.getProducto = (req, res) => {
     }
 }
 
-exports.newProducto = (req, res) => {
+exports.newProducto = async (req, res) => {
     const body = req.body;
-    contenedor.save(body)
+    await contenedor.save(body)
     res.json(body)
 }
 
-exports.updateProducto = (req, res) => {
+exports.updateProducto = async (req, res) => {
     const body = req.body;
-    console.log("contenedor", contenedor);
-    if (contenedor.getById(parseInt(req.params.id))) {
+    if (await contenedor.getById(parseInt(req.params.id))) {
         body.id = parseInt(req.params.id)
-        contenedor.save(body)
+        await contenedor.save(body)
         res.json(body)
+    } else {
+        res.status(404).json(NOT_FOUND);
     }
-    res.status(404).json(NOT_FOUND);
 }
 
-exports.deleteProducto = (req, res) => {
-    if (contenedor.getById(parseInt(req.params.id))) {
-        contenedor.deleteById(parseInt(req.params.id));
+exports.deleteProducto = async (req, res) => {
+    if (await contenedor.getById(parseInt(req.params.id))) {
+        await contenedor.deleteById(parseInt(req.params.id));
         res.json({ mensaje: "Objeto eliminado" });
-    }
-    res.status(404).json(NOT_FOUND);
+    } else {
+        res.status(404).json(NOT_FOUND)
+    };
 }
 
 
