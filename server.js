@@ -3,10 +3,13 @@ const path = require("path")
 const routesAPI = require("./src/routes")
 const PORT = 8080;
 const app = express();
-const productoController = require("./src/controllers/ProductoController")
+const MySqlController = require("./src/controllers/MySqlController")
 const { Server: HttpServer } = require("http");
 const http = new HttpServer(app);
 const io = require("socket.io")(http)
+const MessageController = require("./src/controllers/MessageController")
+
+MessageController.init();
 
 // const io = new SocketIO(http)
 
@@ -34,29 +37,8 @@ app.use("/public", express.static(path.join(__dirname, "public")))
 app.use("/api", routesAPI)
 
 
-
-const productos = [
-    {
-        "title": "Escuadra",
-        "price": 123.45,
-        "thumbnail": "https://cdn3.iconfinder.com/data/icons/education-209/64/ruler-triangle-stationary-school-256.png",
-        "id": 1
-    },
-    {
-        "title": "Calculadora",
-        "price": 234.56,
-        "thumbnail": "https://cdn3.iconfinder.com/data/icons/education-209/64/calculator-math-tool-school-256.png",
-        "id": 2
-    },
-    {
-        "title": "Globo Terráqueo",
-        "price": 345.67,
-        "thumbnail": "https://cdn3.iconfinder.com/data/icons/education-209/64/globe-earth-geograhy-planet-school-256.png",
-        "id": 3
-    }
-]
-
-const pushData = () => {
+const pushData = async () => {
+    const productos = await MySqlController.getAll();
     io.emit("data", productos);
 }
 
@@ -65,16 +47,19 @@ app.get("/", (req, res) => {
     res.render("index")
 })
 
-app.get("/productos", (req, res) => {
-    res.render("productos", { productos: productos })
+app.get("/productos", async (req, res) => {
+    const productos = await MySqlController.getAll();
+    res.render("productos", { productos })
 })
 
-app.post("/", (req, res) => {
-    const id = (productos && productos.length > 0) ? productos.length + 1 : "1"
-    productos.push({ ...req.body, id });
-    pushData()
-    //res.redirect('/productos');
-    res.redirect('/');
+app.post("/", async (req, res) => {
+    try {
+        const obj = await MySqlController.save({ ...req.body });
+        pushData()
+        res.json(obj);
+    } catch (err) {
+        res.status(500).res({ message: "se produjo un error" })
+    }
 })
 
 
@@ -85,17 +70,21 @@ app.post("/", (req, res) => {
 
 io.on("connection", (socket) => {
     console.log("connection");
+    MessageController.getMessages().then(r => {
+        io.emit("messages", r);
+    })
     socket.on("fetch", data => {
         pushData();
     })
 
     socket.on("new message", data => {
         data.fecha = new Date();
+        MessageController.saveMessage(data);
         io.emit("msg", data)
     })
 
     socket.on("message", data => {
-        pushData();
+         pushData();
     })
 
 })
