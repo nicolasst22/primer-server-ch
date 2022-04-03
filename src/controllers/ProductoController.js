@@ -1,8 +1,10 @@
 const contenedor = require("./MysqlController")
+const faker = require('faker');
+faker.locale = "es";
 
 exports.listaProductos = async (req, res) => {
     const productos = await contenedor.getAll();
-    res.render("productos", { productos })
+    res.json(productos)
 }
 
 const NOT_FOUND = { error: 'producto no encontrado' };
@@ -41,4 +43,18 @@ exports.deleteProducto = async (req, res) => {
     };
 }
 
+
+exports.test = async (req, res) => {
+    const products = []
+  
+    for(i=0; i <5; i++){
+        const p = {
+            nombre: faker.commerce.productName(),
+            precio: faker.commerce.price(),
+            foto: faker.image.image(640, 480, true)
+        }
+        products.push(p);
+    }
+    res.json(products)
+}
 

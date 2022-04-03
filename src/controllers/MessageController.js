@@ -1,35 +1,47 @@
-const { development } = require('../db/sqlite')
-const knex = require('knex')(development);
+const { Contenedor } = require("../database/Contenedor")
+const contenedor = new Contenedor("messages");
+const {schema, normalize,denormalize} = require("normalizr");
+const util = require('util')
+
+const Author = new schema.Entity("authors")
+const Message = new schema.Entity("message", {author: Author})
+// const Messages = new schema.Entity("messages", {messages: [Message]});
+const Messages = [Message];
+
+(async()=>{
+    const msgs1 = await contenedor.getAll();
+    console.log("1", msgs1)
+    const msgs  ={ id: 1, messages: msgs1 }
+    const n1 = normalize(msgs1, Messages);
+    const n = denormalize(n1.result, Messages, n1.entities)
+    console.log(util.inspect(n, false,7,true));
+})();
 
 
-exports.init = async () => {
-    try {
-        await knex.schema.createTable("messages", table => {
-            table.increments('id');
-            table.string('email');
-            table.datetime("fecha",options={useTz: true, precision: 6})
-            table.string("message")
-        }).then(() => {
-            console.log("tabla sqlite creada")
-        }).catch(err => {
-            console.log("ocurrio un error", err)
-            throw err;
-        }).finally(() => {
-           // knex.destroy();
-        })
-    } catch (err) {
+exports.getMessages = async (req, res) => {
+    const msgs1 = await contenedor.getAll();
+    const msgs  ={ id: 1, messages: msgs1 }
+    const n = normalize(msgs1, Messages);
+    
+    res.json(n);
+}
 
+exports.saveMessage = async (req, res) => {
+    const body = req.body;
+    const msg = {
+        text: body.message,
+        fecha: new Date(),
+        author: {
+            id: body.email,
+            nombre: body.nombre,
+            apellido: body.apellido,
+            edad: body.edad,
+            alias:body.alias,
+            avatar: body.avatar
+        }
     }
-}
-
-exports.getMessages = async () => {
-    return knex.from("messages");
-}
-
-exports.saveMessage = async (msg) => {
-    console.log("guardar");
-    const id = await knex('messages').insert(msg).returning("make_id");
-    return { ...msg, id: id[0] };
+    await contenedor.save(msg);
+    res.redirect('/');
 }
 
 
