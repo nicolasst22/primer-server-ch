@@ -1,8 +1,9 @@
-const { Contenedor } = require("../database/Contenedor")
-const contenedor = new Contenedor("messages");
+require('dotenv').config();
 const {schema, normalize,denormalize} = require("normalizr");
+const container = process.env.CONTAINER ? "../database/" + process.env.CONTAINER : "../database/Contenedor";
+var { Contenedor } = require(container);
 const util = require('util')
-
+const contenedor = new Contenedor("messages");
 const Author = new schema.Entity("authors")
 const Message = new schema.Entity("message", {author: Author})
 // const Messages = new schema.Entity("messages", {messages: [Message]});
@@ -14,8 +15,7 @@ const Messages = [Message];
     const msgs  ={ id: 1, messages: msgs1 }
     const n1 = normalize(msgs1, Messages);
     const n = denormalize(n1.result, Messages, n1.entities)
-    console.log(util.inspect(n, false,7,true));
-})();
+});
 
 
 exports.getMessages = async (req, res) => {

@@ -1,4 +1,4 @@
-const { development } = require('../db/mysql')
+const { development } = require('../db/sqlite')
 const knex = require('knex')(development);
 const createTable = require("../db/utils/createTable");
 const seedProductos = require("../db/utils/insertProductos");
@@ -57,11 +57,11 @@ class Contenedor {
 knex("productos").count('id as CNT').then(()=>{
     console.log("la base ya existe");
 }).catch(async (ee) =>{
-    const { development: config} = require('../db/mysql')
-    config.connection.database = null;
-    const knex2 = require('knex')(config);
-    await knex2.raw('CREATE DATABASE ecommerce_jns');
-    console.log("no existe la base")
+    const { development: config} = require('../db/sqlite')
+    // config.connection.database = null;
+    // const knex2 = require('knex')(config);
+    // await knex2.raw('CREATE DATABASE ecommerce');
+    // console.log("no existe la base")
     await createTable();
     await seedProductos();
 })

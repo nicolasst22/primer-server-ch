@@ -1,4 +1,4 @@
-const { development } = require('../mysql')
+const { development } = require('../sqlite')
 const knex = require('knex')(development);
 
 /**

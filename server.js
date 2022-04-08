@@ -3,7 +3,7 @@ const path = require("path")
 const routesAPI = require("./src/routes")
 const PORT = 8080;
 const app = express();
-const MySqlController = require("./src/controllers/MySqlController")
+// const MySqlController = require("./src/controllers/MySqlController")
 const { Server: HttpServer } = require("http");
 const http = new HttpServer(app);
 
@@ -27,10 +27,9 @@ app.get("/", (req, res) => {
     res.render("index")
 })
 
-
 app.post("/", async (req, res) => {
     try {
-        const obj = await MySqlController.save({ ...req.body });
+       // const obj = await MySqlController.save({ ...req.body });
         pushData()
         res.json(obj);
     } catch (err) {

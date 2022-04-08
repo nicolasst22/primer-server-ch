@@ -7,5 +7,4 @@
         connection: { filename: "./db/ecommerce.sqlite"}
       },
       useNullAsDefault: true
-    
 }
