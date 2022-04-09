@@ -55,7 +55,7 @@ class Contenedor {
 }
 
 knex("productos").count('id as CNT').then(()=>{
-    console.log("la base ya existe");
+    //intentanmos porque si da error creamos y poblamos
 }).catch(async (ee) =>{
     const { development: config} = require('../db/sqlite')
     // config.connection.database = null;

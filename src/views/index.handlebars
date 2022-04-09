@@ -6,6 +6,9 @@
                     Centro de Mensages <span id="compress"></span>
                 </div>
                 <div class="card-body">
+                    <div class="alert alert-dark" role="alert">
+                        Bienvenido {{username}} <span style="float: right"> <a href="/logout">Desloguear</a></span>
+                    </div>
                     <form class="form-horizontal" method="POST" action="/api/messages" id="chat">
                         <div class="form-group row">
                             <input required placeholder="Ingrese su email" class="form-control col-6" type="email"
@@ -20,10 +23,12 @@
                                 name="apellido" />
                         </div>
                         <div class="form-group row">
-                            <input required placeholder="Ingrese su edad" class="form-control col-6" type="number" name="edad" />
+                            <input required placeholder="Ingrese su edad" class="form-control col-6" type="number"
+                                name="edad" />
                         </div>
                         <div class="form-group row">
-                            <input required placeholder="Ingrese su alias" class="form-control col-6" type="text" name="alias" />
+                            <input required placeholder="Ingrese su alias" class="form-control col-6" type="text"
+                                name="alias" />
                         </div>
                         <div class="form-group row">
                             <input required placeholder="Ingrese su avatar" class="form-control col-6" type="text"
@@ -33,6 +38,8 @@
                         <div class="form-group row">
                             <input required type="text" placeholder="ingrese el mensage" class="form-control col-6"
                                 name="message" />
+                        </div>
+                        <div class="form-group row">
                             <input required class="btn btn-primary" type="submit" name="enviar" value="Enviar">
                         </div>
                     </form>
@@ -57,7 +64,7 @@
                 const denorm = normalizr.denormalize(data.result, Messages, data.entities)
                 const tamaNorm = JSON.stringify(data).length
                 const tamaOrig = JSON.stringify(denorm).length
-                const compress = (tamaNorm * 100 / tamaOrig).toFixed(2) ;
+                const compress = (tamaNorm * 100 / tamaOrig).toFixed(2);
                 $("#compress").text(`(Compresión: ${compress}%)`)
                 denorm.forEach(msg => {
                     const fecha = new Date(msg.fecha);
