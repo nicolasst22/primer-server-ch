@@ -11,7 +11,6 @@ const Messages = [Message];
 
 (async()=>{
     const msgs1 = await contenedor.getAll();
-    console.log("1", msgs1)
     const msgs  ={ id: 1, messages: msgs1 }
     const n1 = normalize(msgs1, Messages);
     const n = denormalize(n1.result, Messages, n1.entities)

@@ -1,0 +1,49 @@
+<div class="container-fluid">
+    <div id="chats">
+        <div class="container-fluid">
+            <div class="card">
+                <div class="card-header text-white bg-primary">
+                    Registrate
+                </div>
+                <div class="card-body">
+                    {{#if error}}
+                    <div class="alert alert-danger">{{error}}</div>
+                    {{/if}}
+                    <form class="form-horizontal" method="POST" action="/registro">
+                        <div class="form-group row">
+                            <label class="col-1" for="nombre">Nombre</label>
+                            <input required placeholder="Ingresar nombre" class="form-control col-6" type="text"
+                                name="nombre" />
+                        </div>
+                        <div class="form-group row">
+                            <label class="col-1" for="nombre">Apellido</label>
+                            <input required placeholder="Ingresar apellido" class="form-control col-6" type="text"
+                                name="apellido" />
+                        </div>
+
+                        <div class="form-group row">
+                            <label class="col-1" for="nombre">Email</label>
+                            <input required placeholder="Ingresar email: miemail@dominio.com" class="form-control col-6"
+                                type="email" name="username" />
+                            {{#if email}}
+                            <div class="alert alert-danger">{{email}}</div>
+                            {{/if}}
+
+                        </div>
+
+                        <div class="form-group row">
+                            <label class="col-1" for="nombre">Contraseña</label>
+                            <input required placeholder="Ingresar su contraseña" class="form-control col-6"
+                                type="password" name="password" />
+                        </div>
+
+                        <div class="form-group row" style="display: inline-block" >
+                            <input class="btn btn-success" type="submit" name="enviar" value="Registrate!">
+                            <a class="btn btn-primary" href="/login">Ya estoy registrado</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

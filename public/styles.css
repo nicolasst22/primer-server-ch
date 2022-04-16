@@ -14,3 +14,15 @@ label {
     width: 50%;
     display: inline-block;
 }
+
+.facebookBtn {
+    background-color: #4267b2;
+}
+
+.facebookBtn-logo {
+    display: flex;
+    align-items: center;
+    width: 195px;
+    height: 23px;
+    color: white;
+}

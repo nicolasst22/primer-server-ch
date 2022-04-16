@@ -6,8 +6,8 @@ const PORT = process.env.PORT || 8080
 const expressSession = require("express-session")
 const cookieParser = require("cookie-parser");
 const { Server: HttpServer } = require("http");
-
 const MongoStore = require("connect-mongo")
+const passport = require('./src/users/config/passport');
 
 // const io = new SocketIO(http)
 
@@ -41,17 +41,18 @@ app.set("view engine", "handlebars");
 
 app.use("/public", express.static(path.join(__dirname, "public")))
 app.use("/api", routesAPI)
+app.use(passport.initialize());
+app.use(passport.session());
+
 
 //middleware que contra si esta logueado
 const auth = (req, res, next) => {
-    const { username } = req.session;
-    if (username) {
+    if (req.isAuthenticated()) {
         next();
     } else {
         res.redirect('/login');
     }
 }
-
 
 app.get("/", auth, (req, res) => {
     if (req.session?.visitas) {
@@ -64,23 +65,20 @@ app.get("/", auth, (req, res) => {
 })
 
 
-app.get("/login", (req, res) => {
-    if (req.session?.username) {
+app.get("/login", (req, res,) => {
+    if (req.isAuthenticated()) {
         res.redirect('/');
     } else {
-        res.render("login")
+        res.render("login", { error: req.session.messages ? req.session.messages[0] : undefined })
+        req.session.messages = []
     }
 })
 
-app.post("/login", (req, res) => {
-    const { username } = req.body;
-    if (!username) {
-        res.redirect('/login');
-    } else {
-        req.session.username = username
-        res.redirect('/');
-    }
-})
+app.post("/login", passport.authenticate("login", {
+    successRedirect: "/",
+    failureRedirect: "login",
+    failureMessage: "Invalid username or password"
+}))
 
 app.get("/logout", auth, (req, res) => {
     const { username } = req.session;
@@ -88,11 +86,39 @@ app.get("/logout", auth, (req, res) => {
         if (err) {
             res.send("Ha ocurrido un error")
         } else {
+            req.logout();
             res.render("logout", { username })
         }
     })
 })
 
+app.get("/registro", (req, res) => {
+    if (req.isAuthenticated()) {
+        res.redirect('/');
+    } else {
+        res.render("registro", { error: req.session.messages ? req.session.messages[0] : undefined })
+        req.session.messages = []
+    }
+})
+
+app.post("/registro", passport.authenticate("register", { successRedirect: "/", 
+failureRedirect: "/registro"}))
+
+app.get('/auth/facebook', passport.authenticate('facebook', {
+    scope: ['public_profile', 'email']
+}));
+
+app.get('/auth/facebook/callback',
+    passport.authenticate('facebook', {
+        failureRedirect: '/login',
+        failureMessage: "No se ha podido iniciar sesión con Facebook."
+    }),
+    (req, res) => {
+        req.session.username = req.user.nombre
+        //estoy dentro... voy a home
+        res.redirect('/');
+    }
+);
 
 // app.post("/", auth, async (req, res) => {
 //     try {
@@ -103,6 +129,16 @@ app.get("/logout", auth, (req, res) => {
 //         res.status(500).res({ message: "se produjo un error" })
 //     }
 // })
+
+app.use(function (err, req, res, next) {
+    // set locals, only providing error in development
+    res.locals.message = err.message;
+    res.locals.error = req.app.get('env') === 'development' ? err : {};
+    // render the error page
+    console.log("eeeee", err);
+    res.status(err.status || 500);
+    res.render('error');
+});
 
 http.listen(PORT, err => {
     console.log(`Server iniciado ${PORT} `)
