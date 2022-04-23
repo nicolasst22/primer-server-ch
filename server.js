@@ -8,6 +8,14 @@ const cookieParser = require("cookie-parser");
 const { Server: HttpServer } = require("http");
 const MongoStore = require("connect-mongo")
 const passport = require('./src/users/config/passport');
+const yargs = require('yargs/yargs')(process.argv.slice(2))
+const args = yargs
+ .default({
+ port: process.env.PORT || 8080,
+ }).alias({
+    p: 'port',
+    })
+.argv
 
 // const io = new SocketIO(http)
 
@@ -139,6 +147,19 @@ app.use(function (err, req, res, next) {
     res.status(err.status || 500);
     res.render('error');
 });
+
+app.get("/info", (req, res) =>{
+    const info = {
+        args: JSON.stringify(args),
+        os: process.platform,
+        node: process.version,
+        memory: JSON.stringify(process.memoryUsage()),
+        cwd: process.cwd(),
+        pid: process.pid,
+        path: process.execPath,
+    };
+    res.render("info", {info})
+})
 
 http.listen(PORT, err => {
     console.log(`Server iniciado ${PORT} `)
