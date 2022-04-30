@@ -10,12 +10,14 @@ const MongoStore = require("connect-mongo")
 const passport = require('./src/users/config/passport');
 const yargs = require('yargs/yargs')(process.argv.slice(2))
 const args = yargs
- .default({
- port: process.env.PORT || 8080,
- }).alias({
-    p: 'port',
+    .default({
+        port: process.env.PORT || 8080,
+        modo: "FORK",
+    }).alias({
+        p: 'port',
+        m: "modo"
     })
-.argv
+    .argv
 
 // const io = new SocketIO(http)
 
@@ -48,9 +50,16 @@ app.engine("handlebars", hbs.engine())
 app.set("view engine", "handlebars");
 
 app.use("/public", express.static(path.join(__dirname, "public")))
+app.use("/api", (req, res, next)=>{
+    req.port = args.port;
+    next();
+})
 app.use("/api", routesAPI)
+
 app.use(passport.initialize());
 app.use(passport.session());
+
+
 
 
 //middleware que contra si esta logueado
@@ -109,8 +118,10 @@ app.get("/registro", (req, res) => {
     }
 })
 
-app.post("/registro", passport.authenticate("register", { successRedirect: "/", 
-failureRedirect: "/registro"}))
+app.post("/registro", passport.authenticate("register", {
+    successRedirect: "/",
+    failureRedirect: "/registro"
+}))
 
 app.get('/auth/facebook', passport.authenticate('facebook', {
     scope: ['public_profile', 'email']
@@ -137,6 +148,21 @@ app.get('/auth/facebook/callback',
 //         res.status(500).res({ message: "se produjo un error" })
 //     }
 // })
+const numCPUs = require("os").cpus().length;
+app.get("/info", (req, res) => {
+    const info = {
+        args: JSON.stringify(args),
+        os: process.platform,
+        node: process.version,
+        memory: JSON.stringify(process.memoryUsage()),
+        cwd: process.cwd(),
+        pid: process.pid,
+        path: process.execPath,
+        cpus: numCPUs,
+        port: args.port
+    };
+    res.render("info", { info })
+})
 
 app.use(function (err, req, res, next) {
     // set locals, only providing error in development
@@ -148,22 +174,31 @@ app.use(function (err, req, res, next) {
     res.render('error');
 });
 
-app.get("/info", (req, res) =>{
-    const info = {
-        args: JSON.stringify(args),
-        os: process.platform,
-        node: process.version,
-        memory: JSON.stringify(process.memoryUsage()),
-        cwd: process.cwd(),
-        pid: process.pid,
-        path: process.execPath,
-    };
-    res.render("info", {info})
-})
 
-http.listen(PORT, err => {
-    console.log(`Server iniciado ${PORT} `)
-})
+if (args.modo.toUpperCase() === "CLUSTER") {
+    const cluster = require("cluster");
+    if (cluster.isMaster) {
+        console.log(`Master con pid ${process.pid}`);
+        for(i =0 ; i < numCPUs ; i++){
+            cluster.fork();
+        }
+        cluster.on("exit", (worker, code, signal) => {
+            console.log(`el worker pid ${worker} termino con exit ${code}`);
+            cluster.fork();
+        })
+    } else {
+        console.log(`Worker con pid ${process.pid}`);
+        http.listen(args.port, err => {
+            //console.log(`Server iniciado ${PORT} `)
+        })
+    }
+} else {
+    http.listen(args.port, err => {
+        console.log(`Server iniciado ${args.port} `)
+    })
+}
+
+
 
 
 

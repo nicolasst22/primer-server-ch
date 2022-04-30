@@ -16,7 +16,11 @@ api.get("/randoms", (req, res) => {
     let cant = req.query.cant || 1e7;
     const child = fork("./src/utils/random.js", [cant]);
     child.on("message", val => {
-        res.json(val);
+        const obj = {
+            port: req.port,
+            randoms: val
+        }
+        res.json(obj);
     })
 })
 
