@@ -9,6 +9,35 @@ const { Server: HttpServer } = require("http");
 const MongoStore = require("connect-mongo")
 const passport = require('./src/users/config/passport');
 const yargs = require('yargs/yargs')(process.argv.slice(2))
+const log4js = require("log4js");
+log4js.configure({
+    appenders: {
+        miLoggerConsole: { type: "console" },
+        miLoggerFile: { type: "file", filename: "warn.log" },
+        miLoggerFileErrs: { type: "file", filename: "error.log" },
+        loggerConsola: { type: "logLevelFilter", appender: "miLoggerConsole", level: "info" },
+        loggerWarns: { type: "logLevelFilter", appender: "miLoggerFile", level: "warn" },
+        loggerErrs: { type: "logLevelFilter", appender: "miLoggerFileErrs", level: "error" }
+    },
+    categories: {
+        // default: { appenders: ["miLoggerConsole"], level: "trace" },
+        // consola: { appenders: ["miLoggerConsole"], level: "debug" },
+        // archivo: { appenders: ["miLoggerFile"], level: "warn" },
+        // archivo2: { appenders: ["miLoggerFileErrs"], level: "error" },
+        // todos: { appenders: ["miLoggerConsole", "miLoggerFile"], level: "error" }
+        default: { appenders: ["loggerConsola"], level: "all" },
+        custom: { appenders: ["loggerConsola", "loggerWarns", "loggerErrs"], level: "all" }
+    }
+});
+const logger = log4js.getLogger("custom");
+// logger.trace("Soy un trace");
+// logger.debug("Soy un debug");
+// logger.info("Soy un info");
+// logger.warn("Soy un warn");
+// logger.error("Soy un error");
+// logger.fatal("Soy fatale!!!");
+
+
 const args = yargs
     .default({
         port: process.env.PORT || 8080,
@@ -50,7 +79,7 @@ app.engine("handlebars", hbs.engine())
 app.set("view engine", "handlebars");
 
 app.use("/public", express.static(path.join(__dirname, "public")))
-app.use("/api", (req, res, next)=>{
+app.use("/api", (req, res, next) => {
     req.port = args.port;
     next();
 })
@@ -149,6 +178,10 @@ app.get('/auth/facebook/callback',
 //     }
 // })
 const numCPUs = require("os").cpus().length;
+app.use((req, res, next) => {
+    logger.info(`${req.method}: ${req.path}`);
+    next();
+})
 app.get("/info", (req, res) => {
     const info = {
         args: JSON.stringify(args),
@@ -164,12 +197,18 @@ app.get("/info", (req, res) => {
     res.render("info", { info })
 })
 
+app.use((req, res, next) => {
+    const msg = `${req.method}: ${req.path} not found`;
+    logger.warn(msg);
+    res.status(404).send(msg);
+});
+
 app.use(function (err, req, res, next) {
     // set locals, only providing error in development
     res.locals.message = err.message;
     res.locals.error = req.app.get('env') === 'development' ? err : {};
     // render the error page
-    console.log("eeeee", err);
+    logger.error("error", err);
     res.status(err.status || 500);
     res.render('error');
 });
@@ -179,7 +218,7 @@ if (args.modo.toUpperCase() === "CLUSTER") {
     const cluster = require("cluster");
     if (cluster.isMaster) {
         console.log(`Master con pid ${process.pid}`);
-        for(i =0 ; i < numCPUs ; i++){
+        for (i = 0; i < numCPUs; i++) {
             cluster.fork();
         }
         cluster.on("exit", (worker, code, signal) => {

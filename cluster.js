@@ -9,7 +9,7 @@ const { Server: HttpServer } = require("http");
 const MongoStore = require("connect-mongo")
 const passport = require('./src/users/config/passport');
 const yargs = require('yargs/yargs')(process.argv.slice(2))
-const numCPUs = require("os").cpus().length;
+
 const args = yargs
     .default({
         port: process.env.PORT || 8080,
