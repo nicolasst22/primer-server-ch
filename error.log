@@ -1,0 +1,22 @@
+[2022-05-07T11:27:19.159] [ERROR] custom - Soy un error
+[2022-05-07T11:27:19.160] [FATAL] custom - Soy fatale!!!
+[2022-05-07T12:40:58.609] [ERROR] custom - error Error: Failed to lookup view "not found" in views directory "D:\Cursos\coderhouse\backend\primer-server-ch\src\views"
+    at Function.render (D:\Cursos\coderhouse\backend\primer-server-ch\node_modules\express\lib\application.js:580:17)
+    at ServerResponse.render (D:\Cursos\coderhouse\backend\primer-server-ch\node_modules\express\lib\response.js:1017:7)
+    at D:\Cursos\coderhouse\backend\primer-server-ch\server.js:202:21
+    at Layer.handle [as handle_request] (D:\Cursos\coderhouse\backend\primer-server-ch\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (D:\Cursos\coderhouse\backend\primer-server-ch\node_modules\express\lib\router\index.js:323:13)
+    at D:\Cursos\coderhouse\backend\primer-server-ch\node_modules\express\lib\router\index.js:284:7
+    at Function.process_params (D:\Cursos\coderhouse\backend\primer-server-ch\node_modules\express\lib\router\index.js:341:12)
+    at next (D:\Cursos\coderhouse\backend\primer-server-ch\node_modules\express\lib\router\index.js:275:10)
+    at D:\Cursos\coderhouse\backend\primer-server-ch\server.js:183:5
+    at Layer.handle [as handle_request] (D:\Cursos\coderhouse\backend\primer-server-ch\node_modules\express\lib\router\layer.js:95:5) {
+  view: View {
+    defaultEngine: 'handlebars',
+    ext: '.handlebars',
+    name: 'not found',
+    root: 'D:\\Cursos\\coderhouse\\backend\\primer-server-ch\\src\\views',
+    engine: [Function: bound ],
+    path: undefined
+  }
+}
