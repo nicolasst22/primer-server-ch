@@ -1,4 +1,4 @@
-const contenedor = require("./MysqlController")
+const contenedor = require("./MySqlController")
 const faker = require('faker');
 faker.locale = "es";
 
