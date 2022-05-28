@@ -1,10 +1,11 @@
 const passport = require('passport');
 const LocalPassport = require('passport-local').Strategy;
-const Usuario = require('../user');
+const Usuario = require('../../models/user');
 const usuarioServices = require("../services")
 const bcrypt = require("bcrypt");
 const FacebookStrategy = require('passport-facebook').Strategy;
-require("dotenv")
+const config = require("../../config")
+const logger = require("../../config/logger")
 
 
 passport.use("login", new LocalPassport({ passReqToCallback: true }, (req, username, password, done) => {
@@ -13,24 +14,28 @@ passport.use("login", new LocalPassport({ passReqToCallback: true }, (req, usern
             return done(err);
         }
         if (!usuario) {
-            return done(null, false);
+            logger.info("no usuario");
+            return done(null, false, { message: 'Usuario o contraseña incorrectos' });
         }
         if (!bcrypt.compareSync(password, usuario.password)) {
+            logger.info("no pass");
             return done(null, false, { message: 'Usuario o contraseña incorrectos' });
         }
         req.session.username = usuario.nombre;
+        req.session.email = usuario.email;
         return done(null, usuario);
     });
 }));
 
-passport.use("register", new LocalPassport({ passReqToCallback: true },(req,username, password, done) => {
+passport.use("register", new LocalPassport({ passReqToCallback: true },async (req,username, password, done) => {
     const {nombre, apellido} = req.body;
-    usuarioServices.registrar(nombre, apellido, username, password, (err, usuario) => {
+    await usuarioServices.registrar(nombre, apellido, username, password, (err, usuario) => {
         if(err){
             req.session.messages = [err]
             done(err)
         }else{
             req.session.username = nombre;
+            eq.session.email = username;
             done(null, usuario);
         }
     })
@@ -39,7 +44,7 @@ passport.use("register", new LocalPassport({ passReqToCallback: true },(req,user
 passport.use(new FacebookStrategy({
     clientID: process.env.FACEBOOK_APP_ID,
     clientSecret: process.env.FACEBOOK_APP_SECRET,
-    callbackURL: `http://localhost:${process.env.PORT}/auth/facebook/callback`,
+    callbackURL: `${config.APP_URL}/auth/facebook/callback`,
     profileFields: ['id', 'emails', 'name'] //This
 }, function (accessToken, refreshToken, profile, done) {
     const currentDate = new Date();

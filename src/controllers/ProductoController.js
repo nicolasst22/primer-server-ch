@@ -1,15 +1,16 @@
-const contenedor = require("./MySqlController")
+const productos = require("../productos");
 const faker = require('faker');
 faker.locale = "es";
+const logger = require("../config/logger")
 
 exports.listaProductos = async (req, res) => {
-    const productos = await contenedor.getAll();
-    res.json(productos)
+    const result = await productos.getAll();
+    res.json(result)
 }
 
 const NOT_FOUND = { error: 'producto no encontrado' };
 exports.getProducto = async (req, res) => {
-    const result = await contenedor.getById(parseInt(req.params.id));
+    const result = await productos.getById(parseInt(req.params.id));
     if (result) {
         res.json(result);
     } else {
@@ -18,26 +19,41 @@ exports.getProducto = async (req, res) => {
 }
 
 exports.newProducto = async (req, res) => {
-    const body = req.body;
-    await contenedor.save(body)
-    res.json(body)
+    try {
+        const body = req.body;
+        await productos.save(body)
+        res.json(body)
+    } catch (ex) {
+        logger.error(ex.message)
+        res.status(500).json("Se produjo un error. Revise los logs de error")
+    }
 }
 
 exports.updateProducto = async (req, res) => {
     const body = req.body;
-    if (await contenedor.getById(parseInt(req.params.id))) {
-        body.id = parseInt(req.params.id)
-        await contenedor.save(body)
-        res.json(body)
+    if (await productos.getById(parseInt(req.params.id))) {
+        try {
+            body.id = parseInt(req.params.id)
+            await productos.save(body)
+            res.json(body)
+        } catch (ex) {
+            logger.error(ex.message)
+            res.status(500).json("Se produjo un error. Revise los logs de error")
+        }
     } else {
         res.status(404).json(NOT_FOUND);
     }
 }
 
 exports.deleteProducto = async (req, res) => {
-    if (await contenedor.getById(parseInt(req.params.id))) {
-        await contenedor.deleteById(parseInt(req.params.id));
-        res.json({ mensaje: "Objeto eliminado" });
+    if (await productos.getById(parseInt(req.params.id))) {
+        try {
+            await productos.deleteById(parseInt(req.params.id));
+            res.json({ mensaje: "Objeto eliminado" });
+        } catch (ex) {
+            logger.error(ex.message)
+            res.status(500).json("Se produjo un error. Revise los logs de error")
+        }
     } else {
         res.status(404).json(NOT_FOUND)
     };
@@ -46,8 +62,8 @@ exports.deleteProducto = async (req, res) => {
 
 exports.test = async (req, res) => {
     const products = []
-  
-    for(i=0; i <5; i++){
+
+    for (i = 0; i < 5; i++) {
         const p = {
             nombre: faker.commerce.productName(),
             precio: faker.commerce.price(),

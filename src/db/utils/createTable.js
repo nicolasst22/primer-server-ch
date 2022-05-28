@@ -1,5 +1,6 @@
-const { development } = require('../sqlite')
+const { development } = require('../../config/sqlite')
 const knex = require('knex')(development);
+const logger = require("../../config/logger")
 
 /**
  * Se crea una nueva tabla con la funcion createTable()
@@ -15,9 +16,9 @@ const createTable = async () => {
         table.string('thumbnail');
         table.decimal("price", 8, 2)
     }).then(() => {
-        console.log("tabla creada")
+        logger.info("tabla creada")
     }).catch(err => {
-        console.log("ocurrio un error", err)
+        logger.info("ocurrio un error", err)
         throw err;
     }).finally(() => {
         knex.destroy();

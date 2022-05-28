@@ -1,5 +1,6 @@
 const {development} = require('../mysql')
 const knex = require('knex')(development);
+const logger = require("../../config/logger");
 
 knex.from("productos")
 .select("title, price, thumbnail")

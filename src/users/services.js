@@ -1,15 +1,13 @@
 
-const Usuario = require("./user");
+const Usuario = require("../models/user");
 const bcrypt = require("bcrypt");
 const services = {};
 
 services.findByEmail = (email) => {
 
-
-
 }
 
-services.registrar = (nombre, apellido, email, password, done) => {
+services.registrar = async (nombre, apellido, email, password, done) => {
     Usuario.findOne({ email }, (err, usuario) => {
         if (err){
             return done(err.message);

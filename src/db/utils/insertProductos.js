@@ -1,5 +1,6 @@
-const {development} = require('../sqlite')
+const {development} = require('../../config/sqlite')
 const knex = require('knex')(development);
+const logger = require("../../config/logger");
 const productos = [
     {
     "title": "Escuadra",
@@ -27,10 +28,10 @@ const productos = [
     const seed = async () => {
        return knex('productos').insert(productos)
         .then(()=>{
-            console.log("se crearon productos");
+            logger.info("se crearon productos");
         })
         .catch(err => {
-            console.log("ocurrio un error", err)
+            logger.info("ocurrio un error", err)
             throw err;
         }).finally(()=>{
             knex.destroy();

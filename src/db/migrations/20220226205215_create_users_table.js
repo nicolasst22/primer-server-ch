@@ -2,6 +2,8 @@
  * @param { import("knex").Knex } knex
  * @returns { Promise<void> }
  */
+const logger = require("../../config/logger");
+
 exports.up = function (knex) {
     knex.schema.createTable("productos", table => {
         table.increments('id');
@@ -9,9 +11,9 @@ exports.up = function (knex) {
         table.string('thumbnail');
         table.decimal("price", 8, 2)
     }).then(() => {
-        console.log("tabla creada")
+        logger.info("tabla creada")
     }).catch(err => {
-        console.log("ocurrio un error", err)
+        logger.info("ocurrio un error", err)
         throw err;
     }).finally(() => {
         knex.destroy();
