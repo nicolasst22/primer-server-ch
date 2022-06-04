@@ -23,7 +23,6 @@ class Mensajes {
     getAll = () => {
         return (async () => {
             const all = await this.dao.getAll();
-            console.log("map", all.map(m => new MessageDTO(m)));
             return all.map(m => new MessageDTO(m));
             //return all;
         })();
@@ -39,11 +38,14 @@ class Mensajes {
 
     getById = async (id) => {
         let a = await this.dao.getById(id);
-        return a;
+        if (a) {
+            return new MessageDTO(a);
+        }
+        return null;
     }
 
     save = async (objeto) => {
-        await this.dao.save(objeto);
+        await new MessageDTO(this.dao.save(objeto));
     }
 
 }

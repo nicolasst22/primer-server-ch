@@ -9,7 +9,7 @@ const logger = require("../../config/logger");
 
 
 class MensajesMongoDAO {
-    
+
     constructor() {
     }
     save = async (objeto) => {
@@ -18,8 +18,8 @@ class MensajesMongoDAO {
             if (obj) {
                 await Message.updateOne({ "_id": (objeto._id || objeto.id) }, objeto)
             } else {
-                const ultimo = await Message.find({}).sort( { id: -1 } ).limit(1);
-                objeto.id = (ultimo[0])?+ultimo[0].id+1:1;
+                const ultimo = await Message.find({}).sort({ id: -1 }).limit(1);
+                objeto.id = (ultimo[0]) ? +ultimo[0].id + 1 : 1;
                 return await Message.create(objeto);
             }
         } catch (ex) {
