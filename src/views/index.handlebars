@@ -11,27 +11,6 @@
                     </div>
                     <form class="form-horizontal" method="POST" action="/api/messages" id="chat">
                         <div class="form-group row">
-                            <input required placeholder="Ingrese su nombre" class="form-control col-6" type="text"
-                                name="nombre" />
-                        </div>
-                        <div class="form-group row">
-                            <input required placeholder="Ingrese su apellido" class="form-control col-6" type="text"
-                                name="apellido" />
-                        </div>
-                        <div class="form-group row">
-                            <input required placeholder="Ingrese su edad" class="form-control col-6" type="number"
-                                name="edad" />
-                        </div>
-                        <div class="form-group row">
-                            <input required placeholder="Ingrese su alias" class="form-control col-6" type="text"
-                                name="alias" />
-                        </div>
-                        <div class="form-group row">
-                            <input required placeholder="Ingrese su avatar" class="form-control col-6" type="text"
-                                name="avatar" />
-                        </div>
-
-                        <div class="form-group row">
                             <input required type="text" placeholder="ingrese el mensage" class="form-control col-6"
                                 name="message" />
                         </div>
@@ -55,7 +34,7 @@
             .then(response => response.json())
             .then(data => {
                 const Author = new normalizr.schema.Entity("authors")
-                const Message = new normalizr.schema.Entity("message", { author: Author })
+                const Message = new normalizr.schema.Entity("message")
                 const Messages = [Message];
                 const denorm = normalizr.denormalize(data.result, Messages, data.entities)
                 const tamaNorm = JSON.stringify(data).length
@@ -66,7 +45,7 @@
                     const fecha = new Date(msg.fecha);
                     $("#messages").append(`
                     <li>
-                        <span style="margin: 1px;color:blue">${msg.author.id}</span><span
+                        <span style="margin: 1px;color:blue">${msg.author}</span><span
                         style="margin: 1px; color:red">[${fecha.toLocaleDateString()} ${fecha.toLocaleTimeString()}]</span>
                         <span style="margin: 1px; color:green">: ${msg.text}</span>
                     </li>
@@ -78,7 +57,6 @@
     })
     $("#chat").on("submit", (e) => {
         let msg = {
-            email: e.target[0].value,
             message: e.target[6].value
         }
         if (!msg.message) {

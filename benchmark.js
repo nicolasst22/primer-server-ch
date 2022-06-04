@@ -1,5 +1,6 @@
 const autocannon = require("autocannon");
-const {PassThrough} = require("stream");
+const {PassThrough} = require("stream");3
+conso
 
 function run (url){
     const buf = []

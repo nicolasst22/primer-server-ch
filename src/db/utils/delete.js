@@ -1,14 +1,15 @@
 const {development} = require('../mysql')
 const knex = require('knex')(development);
+const logger = require("../../config/logger");
 
 knex.from("productos")
 .where("price", ">", 100)
 .del()
 .then( rows => {
-    console.log("updated", rows);
+    logger.info("updated", rows);
 })
 .catch(err => {
-    console.log("ocurrio un error", err)
+    logger.info("ocurrio un error", err)
     throw err;
 }).finally(()=>{
     knex.destroy();

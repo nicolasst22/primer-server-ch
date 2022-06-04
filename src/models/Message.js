@@ -13,7 +13,6 @@ const MessageSchema = new Schema(
             alias: String,
             edad: Number,
             avatar: String,
-            stock: Number,
         }
         
 

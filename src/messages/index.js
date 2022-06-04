@@ -1,32 +1,51 @@
 const config = require("../config")
-var { Contenedor } = require("../dao/" + config.CONTAINER);
-const contenedor = new Contenedor("messages");
+const MensajesFileDAO = require("./dao/MensajesFileDAO")
+const MensajeMongoDAO = require("./dao/MensajesMongoDAO")
+const MessageDTO = require("../models/DTO/MessageDTO");
 
-const mensajes = {}
 
+class Mensajes {
 
-mensajes.getAll = () => {
-    return (async () => {
-        const a = await contenedor.getAll();
+    constructor() {
+        this.dao = this.getDao();
+    }
+
+    getDao = () => {
+        if (this.dao)
+            return this.dao;
+
+        if (config.CONTAINER == 'Mongo') {
+            return new MensajeMongoDAO();
+        }
+        return new MensajesFileDAO();
+    }
+
+    getAll = () => {
+        return (async () => {
+            const all = await this.dao.getAll();
+            console.log("map", all.map(m => new MessageDTO(m)));
+            return all.map(m => new MessageDTO(m));
+            //return all;
+        })();
+    }
+
+    deleteById = async (id) => {
+        await this.dao.deleteById(id);
+    }
+
+    deleteAll = async () => {
+        await this.dao.deleteAll;
+    }
+
+    getById = async (id) => {
+        let a = await this.dao.getById(id);
         return a;
-    })();
+    }
+
+    save = async (objeto) => {
+        await this.dao.save(objeto);
+    }
+
 }
 
-mensajes.deleteById = async (id) => {
-    await contenedor.deleteById(id);
-}
-
-mensajes.deleteAll = async () => {
-    await contenedor.deleteAll;
-}
-
-mensajes.getById = async (id) => {
-    let a = await contenedor.getById(id);
-    return a;
-}
-
-mensajes.save = async (objeto) => {
-    await contenedor.save(objeto);
-}
-
-module.exports = mensajes;
+module.exports = new Mensajes();

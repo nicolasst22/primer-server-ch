@@ -28,22 +28,22 @@ app.get("/", (req, res) => {
 
 if (args._.find(a => a === "CLUSTER")) {
     if (cluster.isMaster) {
-        console.log(`Master con pid ${process.pid}`);
+        logger.info(`Master con pid ${process.pid}`);
         cluster.fork();
         cluster.on("exit", (worker, code, signal) => {
-            console.log(worker.process.pid);
-            console.log(`el worker pid ${worker} termino con exit ${code}`);
+            logger.info(worker.process.pid);
+            logger.info(`el worker pid ${worker} termino con exit ${code}`);
             cluster.fork();
         })
     } else {
-        console.log(`Worker con pid ${process.pid}`);
+        logger.info(`Worker con pid ${process.pid}`);
         http.listen(PORT, err => {
-            console.log(`Server iniciado ${PORT} `)
+            logger.info(`Server iniciado ${PORT} `)
         })
     }
 } else {
     http.listen(PORT, err => {
-        console.log(`Server iniciado como fork ${PORT} `)
+        logger.info(`Server iniciado como fork ${PORT} `)
     })
 }
 

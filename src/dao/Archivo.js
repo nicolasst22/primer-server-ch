@@ -1,5 +1,5 @@
 let fs = require('fs');
-class Contenedor {
+class Archivo {
 
 	constructor(fileName) {
 		this.fileName = fileName;
@@ -60,6 +60,4 @@ class Contenedor {
 	}
 }
 
-module.exports = {
-	Contenedor,
-};
+module.exports = Archivo
