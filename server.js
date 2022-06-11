@@ -69,7 +69,7 @@ if (args.modo.toUpperCase() === "CLUSTER") {
         logger.info(`Server iniciado ${args.port} `)
     })
 }
-
+module.exports = app
 
 
 

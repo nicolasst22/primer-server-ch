@@ -45,7 +45,7 @@ class Productos {
     }
 
     save = async (objeto) => {
-       return await his.dao.save(objeto);
+       return await this.dao.save(objeto);
     }
 }
 

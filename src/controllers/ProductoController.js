@@ -21,8 +21,8 @@ exports.getProducto = async (req, res) => {
 exports.newProducto = async (req, res) => {
     try {
         const body = req.body;
-        await productos.save(body)
-        res.json(body)
+        const nuevo = await productos.save(body)
+        res.json(nuevo)
     } catch (ex) {
         logger.error(ex.message)
         res.status(500).json("Se produjo un error. Revise los logs de error")

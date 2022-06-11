@@ -26,7 +26,7 @@ class ContenedorSQL {
                 })
             return obj;
         } else {
-            const id = await knex(this.table).insert(objeto).returning("make_id");
+            const id = await knex(this.table).insert(objeto);
             return { ...objeto, id: id[0] };
         }
 
