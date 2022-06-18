@@ -9,6 +9,7 @@ const MongoStore = require("connect-mongo")
 const passport = require('./src/users/config/passport');
 const logger = require("./src/config/logger");
 const args = require("./src/config/yargs")
+const graphql = require('./src/grapghql/index')
 
 // const io = new SocketIO(http)
 
@@ -31,6 +32,8 @@ app.use(expressSession({
         maxAge: 1000 * 60 * MINUTOS
     }
 }))
+
+app.use('/graphql', graphql);
 
 //vistas para todos
 app.set("views", path.join(__dirname, "src", "views"))

@@ -6,6 +6,7 @@ const logger = require("../config/logger");
 const config = require("../config/index");
 const ProductoKnexDAO = require("./dao/ProductoKnexDAO");
 const ProductoFileDAO = require("./dao/ProductoFileDAO");
+const ProductoDTO = require('../models/DTO/ProductoDTO');
 class Productos {
 
     constructor() {
@@ -13,24 +14,38 @@ class Productos {
     }
 
     getDao = () => {
-        if(this.dao)
+        if (this.dao)
             return this.dao;
-            
+
         if (config.CONTAINER != 'SQL') {
             return new ProductoKnexDAO();
         }
         return new ProductoFileDAO();
     }
 
+    getBy = (campo, valor) => {
+        return (async () => {
+            let products;
+            if (campo && valor) {
+                products = await this.dao.getBy(campo, valor);
+
+            } else {
+                products = await this.dao.getAll();
+            }
+            return products.map(product => new ProductoDTO(product));
+        })();
+    }
+
     getAll = () => {
         return (async () => {
-            const a = await this.dao.getAll();
-            return a;
+            const products = await this.dao.getAll();
+            return products.map(product => new ProductoDTO(product));
         })();
     }
 
     deleteById = async (id) => {
-        await this.dao.deleteById(id);
+       const a = await this.dao.deleteById(id);
+       return a;
     }
 
     deleteAll = async () => {
@@ -39,13 +54,15 @@ class Productos {
 
     getById = async (id) => {
         return (async () => {
-            const a = await this.dao.getById(id);
-            return a;
+            const product = await this.dao.getById(id);
+            return new ProductoDTO(product);
         })()
     }
 
     save = async (objeto) => {
-       return await this.dao.save(objeto);
+        const dto = new ProductoDTO(objeto);
+        const newProducto = await this.dao.save(dto.getProducto());
+        return new ProductoDTO(newProducto);
     }
 }
 

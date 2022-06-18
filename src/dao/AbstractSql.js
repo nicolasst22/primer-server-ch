@@ -46,8 +46,19 @@ class ContenedorSQL {
         })()
     }
 
+    getBy(campo, valor) {
+        return (async () => {
+            const a = await knex.from(this.table).where({
+                [campo]: valor
+            });
+            return a;
+        })()
+    }
+
     async deleteById(id) {
+        const deleted =  await this.getById(id)
         await knex.from(this.table).where({ id: id }).del();
+        return deleted;
     }
 
     async deleteAll() {
